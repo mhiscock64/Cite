@@ -1,0 +1,41 @@
+# Postgres (pgvector) and the Cite API. Ollama stays on the host.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: cite
+      POSTGRES_PASSWORD: cite
+      POSTGRES_DB: cite
+    ports:
+      - "5432:5432"
+    volumes:
+      - cite_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cite -d cite"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://cite:cite@db:5432/cite
+      OLLAMA_BASE_URL: http://host.docker.internal:11434/v1
+      CHAT_MODEL: qwen2.5:7b-instruct
+      EMBED_MODEL: nomic-embed-text
+      SESSION_SECRET: change-me
+      FILE_STORAGE_DIR: /data/files
+      COOKIE_SECURE: "false"
+    ports:
+      - "8000:8000"
+    volumes:
+      - cite_files:/data/files
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  cite_pgdata:
+  cite_files:

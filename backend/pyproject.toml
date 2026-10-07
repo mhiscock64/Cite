@@ -1,0 +1,37 @@
+[project]
+name = "cite"
+version = "1.0.0"
+description = "Personal knowledge base with hybrid retrieval and cited answers"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "pydantic>=2",
+  "pydantic-settings>=2",
+  "sqlalchemy>=2.0.36",
+  "alembic>=1.14",
+  "psycopg[binary]>=3.2",
+  "pgvector>=0.3.6",
+  "openai>=1.55",
+  "argon2-cffi>=23.1",
+  "pypdf>=5.1",
+  "trafilatura>=2.0",
+  "httpx>=0.28",
+  "python-multipart>=0.0.18",
+  "email-validator>=2.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "fpdf2>=2.8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]

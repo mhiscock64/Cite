@@ -1,0 +1,17 @@
+# Attention
+
+This is how a transformer works. A transformer is a neural network built from attention blocks, and it is the architecture behind most current language models. In self-attention, each token builds a query, a key, and a value by multiplying its vector by learned matrices. The block scores the query of one token against the keys of the others, scales those scores, and takes a softmax. The output is a weighted sum of the values. A token can therefore pull information from any other token in the same step, instead of waiting for a recurrent state to carry it across a long sentence.
+
+Multi-head attention runs several of these comparisons in parallel, each in a smaller dimension, then concatenates them. Different heads often specialize: one tracks syntax, another tracks a name and its later mention. A position encoding, or a rotary encoding, tells the block where each token sits. Without a position signal, attention would see a bag of tokens. The rest of the block is a small feed-forward network applied to each token separately, plus residual connections and layer normalization so the stack can be deep. Training is still gradient descent on a loss. Attention only changes which computation the loss flows through.
+
+# Tokens, pretraining, and adaptation
+
+A language model does not read letters as a person does. A tokenizer, often byte-pair encoding, cuts text into a vocabulary of subword tokens learned from data. Common words are one token. Rare words are several. The model's job in pretraining is next-token prediction: given the tokens so far, put a probability on every token that could come next. Cross-entropy against the real next token is the loss. Doing this on a huge corpus forces the network to model grammar, facts, and the patterns of the text it saw. It does not force the network to be correct, and it does not give the network a source it can point to later.
+
+The context window is the maximum number of tokens the model can attend to at once. Anything outside that window is invisible unless you put it back inside. Fine-tuning continues training on a narrower dataset so the model's outputs follow a style or a task. Instruction tuning uses examples of requests and good replies. Preference training, including RLHF, ranks replies and shifts the model toward the ones people preferred. None of these steps add a citation by themselves. A model can state a fluent fact it did not store cleanly, which is why an answer that must be grounded should be required to quote retrieved text, the way this library does.
+
+# Using a language model
+
+Temperature rescales the next-token probabilities before sampling. Lower temperature makes the model more repetitive and more conservative. Higher temperature makes it more varied and more likely to leave the likely path. A temperature of zero, or close to it, is greedy decoding. Sampling is not a search for a true answer. It draws from the distribution the model learned. If that distribution puts weight on a plausible falsehood, sampling will sometimes emit it.
+
+Give the model only the context it needs, and prefer retrieved passages over a long prompt of hopes. Ask for a structured result when you need to check it, because free text is hard to validate. Judge the model on a fixed set of tasks you did not tune the prompt on. A prompt that was edited until one example looked good has overfit that example the same way a network overfits a small training set.
