@@ -2,8 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { PreviewHostBridge } from "@/components/preview-host-bridge";
-import { AuthProvider } from "@/lib/auth/provider";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -43,12 +41,9 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body>
-        <PreviewHostBridge />
-        <AuthProvider>
-          <QueryClientProvider client={client}>
-            <Outlet />
-          </QueryClientProvider>
-        </AuthProvider>
+        <QueryClientProvider client={client}>
+          <Outlet />
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>
